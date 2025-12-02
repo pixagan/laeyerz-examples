@@ -1,3 +1,9 @@
+/Examples/DocChat
+/Examples/IncomeExpenseClassifier
+/Examples/EmailManager
+/Examples/SelfCorrecting
+/Examples/WebResearcher
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
