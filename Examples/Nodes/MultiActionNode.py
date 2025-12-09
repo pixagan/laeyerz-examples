@@ -38,7 +38,9 @@ class CustomNode1(Node):
                 "name":"input0",
                 "type":"str",
                 "description":"Input to the model",
-                "sourceType":"input"
+                "inputType":"source",
+                "source":"INPUTS|input0",
+                "value":None
             }
         ]
         model0_outputs = [
@@ -56,7 +58,9 @@ class CustomNode1(Node):
                 "name":"input0",
                 "type":"str",
                 "description":"Input to the model",
-                "sourceType":"input"
+                "inputType":"source",
+                "source":"Model0|model0|output0",
+                "value":None
             }
         ]
         model1_outputs = [
@@ -95,7 +99,7 @@ cn1 = CustomNode1("CN1")
 node_inputs = {
     "input0":"Hello"
 }
-outputs = cn1.run(node_inputs)
+outputs = cn1.run("model0", node_inputs)
 
 print("Outputs:", outputs)
 

@@ -42,8 +42,9 @@ node0_inputs = [
         "name":"input0",
         "type":"str",
         "description":"Input to the model",
-        "sourceType":"input",
-        "source":"INPUTS|input0"
+        "inputType":"source",
+        "source":"INPUTS|input0",
+        "value":None
     }
 ]
 node0_outputs = [
@@ -78,8 +79,9 @@ node1_inputs = [
         "name":"input1",
         "type":"str",
         "description":"Input to the model",
-        "sourceType":"input",
-        "source":"Model0|model0|output0"
+        "inputType":"source",
+        "source":"Model0|model0|output0",
+        "value":None
     }
 ]
 node1_outputs = [

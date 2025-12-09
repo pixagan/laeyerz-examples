@@ -1,8 +1,7 @@
-/Examples/DocChat
 /Examples/IncomeExpenseClassifier
 /Examples/EmailManager
-/Examples/SelfCorrecting
 /Examples/WebResearcher
+/Examples/DocChat
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

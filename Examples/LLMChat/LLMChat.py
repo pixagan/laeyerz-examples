@@ -49,7 +49,6 @@ messages = [
     {"role": "developer", "content": instructions},
     {"role": "developer", "content": "Tools: " + str(tools)},
     {"role": "user", "content": "query: " + query}
-    
 ]
 
 #set up an input dictionary for the llm
@@ -63,7 +62,9 @@ inputs  = {
 #--------- Process the LLM Output -----------
 
 #call the llm
-output = llm.call_llm(inputs)
+output = llm.call_llm(messages, model, tools )
+
+#output = llm.run('call_llm', inputs)
 
 #extract the llm output
 output_text = output['message'].content

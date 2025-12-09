@@ -81,7 +81,7 @@ node1_inputs = [
         "type":"str",
         "description":"Input to the model",
         "inputType":"source",
-        "source":"Model0|model0|output0",
+        "source":"INPUTS|input1",
         "value":None
     }
 ]
@@ -95,18 +95,105 @@ node1_outputs = [
 node1.set_function("model1",model1, params, node1_inputs, node1_outputs)
 
 
-#run the flow
-input_data = {
+
+
+#----------------Connecting Node 0 to Node 1 ----------------
+def connectormodel12(input0:str, input1:str)->(str):
+    print("Connector 12 :", input0, input1)
+
+    output = input0 + "_" + input1
+    outputs = {
+        "output0":output
+    }
+
+    return outputs
+
+connector12 = Node("Connector12")
+connector12_inputs = [
+    {
+        "name":"input0",
+        "type":"str",
+        "description":"Input to the model",
+        "inputType":"source",
+        "source":"INPUTS|input0",
+        "value":None
+    },
+    {
+        "name":"input1",
+        "type":"str",
+        "description":"Input to the model",
+        "inputType":"source",
+        "source":"INPUTS|input1",
+        "value":None
+    }
+]
+connector12_outputs = [
+    {
+        "name":"output0",
+        "type":"str",
+        "description":"Output from the model"
+    }
+]
+connector12.set_function("connector12",connectormodel12, params, connector12_inputs, connector12_outputs)
+
+
+
+
+def model12(input12:str)->(str):
+
+    print("Model 12 :", input12)
+
+    output = input12+"***************"
+    outputs = {
+        "output12":output
+    }
+
+    return outputs
+
+node12 = Node("Model12")
+node12_inputs = [
+    {
+        "name":"input12",
+        "type":"str",
+        "description":"Input to the model",
+        "inputType":"source",
+        "source":"INPUTS|input12",
+        "value":None
+    }
+]
+
+node12_outputs = [
+    {
+        "name":"output12",
+        "type":"str",
+        "description":"Output from the model"
+    }
+]
+node12.set_function("model12",model12, params, node12_inputs, node12_outputs)
+
+
+
+
+
+outputs0 = node0.run('model0', {
     "input0": "Hello, world!"
-}
+    })
 
+outputs1 = node1.run('model1', {
+    "input1": "Hello, world!"
+    })
 
-outputs0 = node0.run('model0', input_data)
-input1_data = {
-    "input1": outputs0["output0"]
-}
-outputs1 = node1.run('model1', input1_data)
+connection12 = connector12.run('connector12', {
+    "input0": outputs0["output0"],
+    "input1": outputs1["output1"]
+    })
+
+outputs12 = node12.run('model12', {
+    "input12": connection12["output0"]
+    })
 
 
 print("Output0 : ", outputs0)
 print("Output1 : ", outputs1)
+print("Connection12 : ", connection12)
+print("Output12 : ", outputs12)

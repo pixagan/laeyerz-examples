@@ -48,7 +48,9 @@ node0_inputs = [
         "name":"input0",
         "type":"str",
         "description":"Input to the model",
-        "sourceType":"input"
+        "inputType":"source",
+        "source":"INPUTS|input0",
+        "value":None
     }
 ]
 node0_outputs = [
@@ -64,7 +66,7 @@ node0.set_function("model0",model0, params, node0_inputs, node0_outputs)
 node_inputs = {
     "input0":"Hello"
 }
-outputs = node0.run(node_inputs)
+outputs = node0.run("model0", node_inputs)
 
 print("Outputs:", outputs)
 
