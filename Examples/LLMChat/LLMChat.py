@@ -19,16 +19,20 @@ in the Laeyerz framework.
 
 #load .env
 import os
-from dotenv import load_dotenv
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
+#from dotenv import load_dotenv
+#load_dotenv()
+#api_key = os.getenv("OPENAI_API_KEY")
 
 
 from laeyerz.nodes.llm.OpenAILLMNode import OpenAILLMNode as LLM
+from laeyerz.utils.KeyManager import KeyManager
 
+key_manager = KeyManager('API KEY PATH HERE')
+#key_manager = KeyManager()
+api_key = key_manager.get('OPENAI_API_KEY')
 
 #create LLM node
-llm = LLM("Model")
+llm = LLM("Model", config={"api_key": api_key})
 
 
 #-------- Configure the Inputs to the LLM -----------
@@ -51,12 +55,6 @@ messages = [
     {"role": "user", "content": "query: " + query}
 ]
 
-#set up an input dictionary for the llm
-inputs  = {
-    "model": model,
-    "tools": [],
-    "messages": messages,
-}
 
 
 #--------- Process the LLM Output -----------
