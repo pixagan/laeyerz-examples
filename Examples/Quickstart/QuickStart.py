@@ -152,6 +152,8 @@ simple_flow.add_edge("Model2|model2", "END")
 #simple_flow.add_edge("GLOBAL_STATE|value", "Model2|model2|input2")
 
 
+simple_flow.set_node_outputs(['Model2|model2|output2'])
+
 #finalize the flow - let flow make required pre computations, generate structures
 simple_flow.finalize()
 
@@ -160,5 +162,16 @@ input_data = {
     "input0": "Hello, world!"
 }
 output = simple_flow.run(input_data)
-
 print("Output : ", output)
+
+
+flow_dict = simple_flow.to_dict()
+print("Flow Dict : ", flow_dict)
+
+
+simple_flow.export_flow("QuickStart.json")
+
+
+#simple_flow.export_flow("QuickStart.json")
+#simple_flow.export_run(output)
+

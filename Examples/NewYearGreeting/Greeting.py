@@ -25,7 +25,6 @@ key_manager = KeyManager("API KEY PATH HERE")
 api_key = key_manager.get('OPENAI_API_KEY')
 
 
-
 llm = LLM("Model", config={"api_key": api_key})
 model = "gpt-5-mini"
 

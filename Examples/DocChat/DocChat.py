@@ -26,7 +26,10 @@ from laeyerz.nodes.fileloaders.PdfLoader import PdfLoader
 from laeyerz.nodes.dataprocessors.TextProcessor import TextProcessorNode
 from laeyerz.nodes.embeddings.SentenceTransformerNode import SentenceTransformerNode as Embeddings
 from laeyerz.nodes.vectorstores.FaissNode import FaissNode as VectorStore
+from laeyerz.utils.KeyManager import KeyManager
 
+key_manager = KeyManager("YOUR API KEY PATH HERE")
+api_key = key_manager.get('OPENAI_API_KEY')
 
 #Flow 1
 flow1 = Flow("DocumentStore")
@@ -83,7 +86,7 @@ print("-------------Context Text-------------")
 #print(context_text)
 
 # #LLM Node
-llm_node = LLM("LLM")
+llm_node = LLM("LLM", config={"api_key": api_key})
 llm_output = llm_node.call_llm(messages=[
     {"role": "system", "content": "You are a helpful assistant that summarizes documents. Answer the user query based on the context provided."},
     {"role": "user", "content": "context: " + context_text},
