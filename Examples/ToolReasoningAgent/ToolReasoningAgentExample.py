@@ -1,5 +1,5 @@
 import os
-from laeyerz.agent.AgentSimple import AgentSimple
+from laeyerz.agent.ToolReasoningAgent import ToolReasoningAgent
 
 
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8,7 +8,7 @@ from laeyerz.agent.AgentSimple import AgentSimple
 
 api_key_path = "../../.env"
 
-agent = AgentSimple(
+agent = ToolReasoningAgent(
     name="AgentSimple", 
     api_key_path=api_key_path,
     model="gpt-5-mini", 
@@ -25,14 +25,14 @@ def get_weather(city):
 
 agent.add_tool({
     "name": "get_weather",
-    "type": "function",
     "description": "Get the weather for a given city",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "city": { "type": "string", "description": "The city to get the weather for" }
+    "parameters": [
+        {
+            "name": "city",
+            "type": "string",
+            "description": "The city to get the weather for"
         }
-    },
+    ],
     "function": get_weather
 })
 
@@ -42,14 +42,14 @@ def get_traffic_status(city):
 
 agent.add_tool({
     "name": "get_traffic_status",
-    "type": "function",
     "description": "Get the traffic status for a given city",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "city": { "type": "string", "description": "The city to get the traffic status for" }
+    "parameters": [
+        {
+            "name": "city",
+            "type": "string",
+            "description": "The city to get the traffic status for"
         }
-    },
+    ],
     "function": get_traffic_status
 })
 

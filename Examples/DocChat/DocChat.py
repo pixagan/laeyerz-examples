@@ -21,7 +21,7 @@ import numpy as np
 
 
 from laeyerz.flow.Flow import Flow
-from laeyerz.nodes.llm.OpenAILLMNode import OpenAILLMNode as LLM
+from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.nodes.fileloaders.PdfLoader import PdfLoader
 from laeyerz.nodes.dataprocessors.TextProcessor import TextProcessorNode
 from laeyerz.nodes.embeddings.SentenceTransformerNode import SentenceTransformerNode as Embeddings
@@ -86,7 +86,7 @@ print("-------------Context Text-------------")
 #print(context_text)
 
 # #LLM Node
-llm_node = LLM("LLM", config={"api_key": api_key})
+llm_node = LLM("LLM", config={"api_key": api_key}, model="gpt-5-mini")
 llm_output = llm_node.call_llm(messages=[
     {"role": "system", "content": "You are a helpful assistant that summarizes documents. Answer the user query based on the context provided."},
     {"role": "user", "content": "context: " + context_text},

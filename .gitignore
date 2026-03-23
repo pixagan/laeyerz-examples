@@ -1,6 +1,25 @@
 /Examples/IncomeExpenseClassifier
 /Examples/EmailManager
 /Examples/WebResearcher
+/Examples/SimpleAgent/EmailAgent.py
+/Examples/SimpleAgent/ExamGraderAgent.py
+/Examples/SimpleAgent/FinResearcherAgent.py
+/Examples/SimpleAgent/NodeasTool.py
+/Examples/SimpleAgent/PromptLLMNode.py
+/Examples/SimpleAgent/RAGAgent.py
+/Examples/SimpleAgent/TestYFin.py
+/Examples/QuickStart/QuickStart_view_w1.json
+/Examples/QuickStart/QuickStart_view.json
+/Examples/QuickStart/QuickStart.json
+/Examples/QuickStart/QuickStart_view_w3.json
+/Examples/QuickStart/QuickStart_view_w4.json
+/Examples/QuickStart/QuickStart_view_w5.json
+/Examples/QuickStart/QuickStart_view_w6.json
+/Examples/QuickStart/QuickStart_view_w7.json
+/Examples/QuickStart/QuickStart_view_w8.json
+/Examples/QuickStart/QuickStart_view_w9.json
+        
+
 /.env
 /Examples/.env
 

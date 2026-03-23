@@ -17,7 +17,7 @@ ASCII Greeting Card Generator module for generating ASCII greeting cards
 in the Laeyerz framework.
 """
 
-from laeyerz.nodes.llm.OpenAILLMNode import OpenAILLMNode as LLM
+from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.utils.KeyManager import KeyManager
 
 
@@ -25,8 +25,8 @@ key_manager = KeyManager("API KEY PATH HERE")
 api_key = key_manager.get('OPENAI_API_KEY')
 
 
-llm = LLM("Model", config={"api_key": api_key})
-model = "gpt-5-mini"
+llm = LLM("Model", config={"api_key": api_key, model="gpt-5-mini"})
+
 
 tools = []
 
@@ -58,7 +58,7 @@ messages = [
 ]
 
 
-message = llm.call_llm(messages, model, tools)
+message = llm.call_llm(messages, tools)
 
 
 output_text = message['message'].content
@@ -72,7 +72,6 @@ card_instruction = """Convert the Happy New Year Message into a colourful text-b
 occasion = "Christmas"
 emoji_density = "high"
 
-model_ascii = "gpt-5.2"
 
 ascii_messages = [
     {"role": "developer", "content": card_instruction},
@@ -82,8 +81,7 @@ ascii_messages = [
     
 ]
 
-
-ascii_image = llm.call_llm(ascii_messages, model_ascii, tools)
+ascii_image = llm.call_llm(ascii_messages, tools)
 
 
 output_text = ascii_image['message'].content

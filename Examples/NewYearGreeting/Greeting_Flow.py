@@ -1,6 +1,20 @@
+# Copyright 2025 Pixagan Technologies
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from laeyerz.flow.Node import Node
 from laeyerz.flow.Flow import Flow
-from laeyerz.nodes.llm.OpenAILLMNode import OpenAILLMNode as LLM
+from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.utils.KeyManager import KeyManager
 
 key_manager = KeyManager("../../.env")
@@ -66,7 +80,7 @@ prompt1Node.set_function("prompt", prompt1, {}, prompt1_inputs, prompt1_outputs)
 
 
 #create LLM node
-llm = LLM("TextGen", config={"api_key": api_key})
+llm = LLM("TextGen", config={"api_key": api_key, model="gpt-5-mini"})
 
 
 
@@ -136,7 +150,7 @@ prompt2_outputs = [
 prompt2Node.set_function("prompt", prompt2, {}, prompt2_inputs, prompt2_outputs)
 
 
-llm2 = LLM("ASCIIGen", config={"api_key": api_key})
+llm2 = LLM("ASCIIGen", config={"api_key": api_key, model="gpt-5-mini"})
 
 
 greetingFlow = Flow("GreetingFlow")
@@ -167,7 +181,6 @@ greetingFlow.add_data_source("Prompt1|prompt|max_words", "INPUTS|max_words")
 greetingFlow.add_data_source("Prompt1|prompt|query", "INPUTS|query")
 
 greetingFlow.add_data_source("TextGen|call_llm|messages", "Prompt1|prompt|prompt")
-greetingFlow.set_node_input("TextGen|call_llm|model", "gpt-5-mini")
 greetingFlow.set_node_input("TextGen|call_llm|tools", [])
 
 greetingFlow.set_node_input("Prompt2|prompt|instructions", card_instructions)

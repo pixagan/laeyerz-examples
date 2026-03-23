@@ -20,7 +20,7 @@ in the Laeyerz framework.
 import os
 
 from laeyerz.flow.Flow import Flow
-from laeyerz.nodes.llm.OpenAILLMNode import OpenAILLMNode as LLM
+from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.nodes.llm.PromptNode import PromptNode
 from laeyerz.utils.KeyManager import KeyManager
 
@@ -28,11 +28,11 @@ key_manager = KeyManager('API_KEY path here')
 api_key = key_manager.get('OPENAI_API_KEY')
 
 #create LLM node
-llm = LLM("LLMNode", config={"api_key": api_key})
+llm = LLM("LLMNode", config={"api_key": api_key, model="gpt-5-mini"})
 
 #-------- Configure the Inputs to the LLM -----------
 #pick the llm model
-model = "gpt-5-mini"
+
 tools = []
 
 instructions = "You are a helpful assistant that can summarize the given text"

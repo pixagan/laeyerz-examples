@@ -19,19 +19,19 @@ in the Laeyerz framework.
 
 import os
 
+from laeyerz.flow.Flow import Flow
 from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
+from laeyerz.nodes.llm.PromptNode import PromptNode
 from laeyerz.utils.KeyManager import KeyManager
 
-key_manager = KeyManager('API KEY PATH HERE')
-#key_manager = KeyManager() - use this if your .env is in the same folder as this LLMChat.py script
-
+key_manager = KeyManager('API_KEY path here')
 api_key = key_manager.get('OPENAI_API_KEY')
 
 #create LLM node
-llm = LLM("Model", config={"api_key": api_key, model="gpt-5-mini"})
-
+llm = LLM("LLMNode",  config={"api_key": api_key, model="gpt-5-mini"})
 
 #-------- Configure the Inputs to the LLM -----------
+#pick the llm model
 
 tools = []
 
@@ -43,22 +43,59 @@ AI is a major field within computer science that develops theories, techniques, 
 Modern AI systems work by processing large amounts of data, identifying meaningful patterns, and learning rules or behaviors that help them solve specific problems. They can operate autonomously or as tools that enhance human decision-making. The ultimate goal of AI research is to build systems that are reliable, flexible, and capable of working efficiently in real-world scenarios, thereby increasing productivity, improving user experiences, and supporting better decisions across industries."""
 
 
-#chat models require a set of inputs
-messages = [
-    {"role": "developer", "content": instructions},
-    {"role": "developer", "content": "Tools: " + str(tools)},
-    {"role": "user", "content": "query: " + query}
-]
+prompt_template = {
+   "roles": {
+        "instructions":"developer",
+        "query":"user",
+   }
+}
 
+promptN = PromptNode("Prompt", config={}, template=prompt_template)
+promptN.add_prompt_inputs(
+    [
+        {"name": "instructions", "type": "str"},
+        {"name": "query", "type": "str"}
+    ]
+)
+
+
+#print("Actions : ",promptN.actions)
+print("Inputs : ",promptN.actions['generate_prompt_openai'].inputs)
+print("Outputs : ",promptN.actions['generate_prompt_openai'].outputs)
 
 #--------- Process the LLM Output -----------
 
-#call the llm
-output = llm.call_llm(messages=messages, tools=tools)
+llm_flow = Flow("LLM")
 
-#extract the llm output
-output_text = output['message'].content
+#edges
+llm_flow.add_node(promptN)
+llm_flow.add_node(llm)
 
-#postprocess the llm output
-print("Summary: ", output_text)
+#edges
+llm_flow.add_edge("START", "Prompt|generate_prompt_openai")
+llm_flow.add_edge("Prompt|generate_prompt_openai", "LLMNode|call_llm")
+llm_flow.add_edge("LLMNode|call_llm", "END")
+
+#data_sources
+llm_flow.add_data_source("Prompt|generate_prompt_openai|instructions", "INPUTS|instructions")
+llm_flow.add_data_source("Prompt|generate_prompt_openai|query", "INPUTS|query")
+
+llm_flow.add_data_source("LLMNode|call_llm|messages", "Prompt|generate_prompt_openai|messages")
+llm_flow.set_node_input("LLMNode|call_llm|model", "gpt-5-mini")
+llm_flow.set_node_input("LLMNode|call_llm|tools", [])
+
+llm_flow.set_node_outputs(["LLMNode|call_llm|content"])
+
+
+flow_outputs = llm_flow.run(
+    {
+        "instructions": instructions,
+        "query": query
+    }
+)
+
+print("***************** Flow Outputs *****************")
+for key, value in flow_outputs.items():
+    print("Output: ", value)
+
 
