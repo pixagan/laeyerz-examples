@@ -1,22 +1,21 @@
 import os
 from laeyerz.agent.ToolReasoningAgent import ToolReasoningAgent
+from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM   
+from laeyerz.utils.KeyManager import KeyManager
 
 
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# api_key_path = os.environ.get("OPENAI_API_KEY_PATH", os.path.join(BASE_DIR, ".env"))
-# print("api_key_path: ", api_key_path)
+km = KeyManager('../../.env')
 
-api_key_path = "../../.env"
+llm = LLM('Model', config={"api_key":km['OPENAI_API_KEY'], "model":"gpt-5-mini"})
 
-agent = ToolReasoningAgent(
-    name="AgentSimple", 
-    api_key_path=api_key_path,
-    model="gpt-5-mini", 
-    role="You are a travel planner", 
-    instructions = "Given the city and the request, use the tools to provide the best information to the user", 
-    tools={}
-    )
-
+agent = ToolReasoningAgent( name="AgentSimple", config = {
+        "api_key_path":'../../.env',
+        "reasoner":llm, 
+        "role":"You are a travel planner", 
+        "instructions":"Given the city and the request, use the tools to provide the best information to the user", 
+        "tools":{}
+    }
+)
 
 
 #--------Setting up Tools ----------------------------------
