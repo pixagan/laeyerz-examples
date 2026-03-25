@@ -3,9 +3,10 @@ from laeyerz.utils.KeyManager import KeyManager
 from laeyerz.flow.Flow import Flow
 from laeyerz.flow.Node import Node
 
-from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
+#from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
+from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
 
-km = KeyManager('../../.env')
+km = KeyManager('YOUR_API_KEY_PATH_HERE')
 
 
 generator_llm = LLM('Generator', config={"api_key":km['OPENAI_API_KEY'], "model":"gpt-5-mini"})
@@ -216,4 +217,4 @@ outputs = quiz_gen.run(inputs)
 
 print("Outputs : ", outputs)
 
-print(outputs['Quizzer|quiz|quiz'])
+print(outputs['HTMLGenerator|htmlpage|htmlpage'])

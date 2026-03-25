@@ -17,15 +17,15 @@ ASCII Greeting Card Generator module for generating ASCII greeting cards
 in the Laeyerz framework.
 """
 
-from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
+from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.utils.KeyManager import KeyManager
 
 
-key_manager = KeyManager("API KEY PATH HERE")
+key_manager = KeyManager("YOUR_API_KEY_PATH_HERE")
 api_key = key_manager.get('OPENAI_API_KEY')
 
 
-llm = LLM("Model", config={"api_key": api_key, model="gpt-5-mini"})
+llm = LLM("Model", config={"api_key": api_key, "model":"gpt-5-mini"})
 
 
 tools = []

@@ -1,10 +1,10 @@
 import os
 from laeyerz.agent.ToolReasoningAgent import ToolReasoningAgent
-from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM   
+from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM   
 from laeyerz.utils.KeyManager import KeyManager
 
 
-km = KeyManager('../../.env')
+km = KeyManager('YOUR_API_KEY_PATH_HERE')
 
 llm = LLM('Model', config={"api_key":km['OPENAI_API_KEY'], "model":"gpt-5-mini"})
 

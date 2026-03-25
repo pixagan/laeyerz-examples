@@ -1,6 +1,10 @@
 /Examples/IncomeExpenseClassifier
 /Examples/EmailManager
 /Examples/WebResearcher
+/Examples/CustomNodes
+/Examples/FeedbackAnalyzer
+/Examples/SimpleAgent
+/Examples/DataPlot
 /Examples/SimpleAgent/EmailAgent.py
 /Examples/SimpleAgent/ExamGraderAgent.py
 /Examples/SimpleAgent/FinResearcherAgent.py
@@ -18,7 +22,10 @@
 /Examples/QuickStart/QuickStart_view_w7.json
 /Examples/QuickStart/QuickStart_view_w8.json
 /Examples/QuickStart/QuickStart_view_w9.json
-        
+/Examples/Backup/
+/Examples/BillingWorkflow/QuickStart_view.json
+/Examples/.DS_Store
+.DS_Store
 
 /.env
 /Examples/.env
@@ -231,3 +238,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+__pycache__/
+.DS_Store
+

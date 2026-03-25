@@ -15,15 +15,15 @@
 import numpy as np
 from laeyerz.flow.Flow import Flow
 from laeyerz.flow.Node import Node
-from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
-from laeyerz.nodes.fileloaders.PdfLoader import PdfLoader
-from laeyerz.nodes.dataprocessors.TextProcessor import TextProcessorNode
-from laeyerz.nodes.embeddings.SentenceTransformerNode import SentenceTransformerNode as Embeddings
-from laeyerz.nodes.vectorstores.FaissNode import FaissNode as VectorStore
+from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
+from laeyerz_nodes.fileloaders.PdfLoader import PdfLoader
+from laeyerz_nodes.dataprocessors.TextProcessor import TextProcessorNode
+from laeyerz_nodes.embeddings.SentenceTransformerNode import SentenceTransformerNode as Embeddings
+from laeyerz_nodes.vectorstores.FaissNode import FaissNode as VectorStore
 from laeyerz.utils.KeyManager import KeyManager
 
 
-key_manager = KeyManager("../../.env")
+key_manager = KeyManager("API_KEY_PATH_HERE")
 
 
 #-------------------- Workflow 1 : Document Store -----
@@ -139,7 +139,7 @@ promptNode.set_function("prompt", prompt, {}, prompt_inputs, prompt_outputs)
 
 #LLM Node
 api_key = key_manager.get('OPENAI_API_KEY')
-llm_node = LLM("LLM", config={"api_key": api_key}, model="gpt-5-mini")
+llm_node = LLM("LLM", config={"api_key": api_key, "model":"gpt-5-mini"})
 
 #------ Creating the Workflow ------
 chat_flow = Flow("DocChat")
@@ -173,7 +173,7 @@ chat_flow.add_data_source("Prompt|prompt|context", "DocumentStore|search|results
 chat_flow.add_data_source("Prompt|prompt|query", "INPUTS|query")
 
 chat_flow.add_data_source("LLM|call_llm|messages", "Prompt|prompt|prompt")
-chat_flow.set_node_input("LLM|call_llm|model", "gpt-5-mini")
+#chat_flow.set_node_input("LLM|call_llm|model", "gpt-5-mini")
 chat_flow.set_node_input("LLM|call_llm|tools", [])
 
 #output of the the chat node

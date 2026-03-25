@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Self Reflexion agent
+# Self Reflection agent
 
 from laeyerz.utils.KeyManager import KeyManager
 
-from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
+from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.flow import Flow
 
 import simplejson as json
 
-km = KeyManager('.env path here')
+km = KeyManager('YOUR_API_KEY_PATH_HERE')
 
 drafter = LLM("Drafter", config={"api_key": km["OPENAI_API_KEY"], "model":"gpt-5-mini"})
 

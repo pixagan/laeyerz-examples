@@ -20,15 +20,15 @@ in the Laeyerz framework.
 import os
 
 from laeyerz.flow.Flow import Flow
-from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
-from laeyerz.nodes.llm.PromptNode import PromptNode
+from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
+from laeyerz_nodes.llm.PromptNode import PromptNode
 from laeyerz.utils.KeyManager import KeyManager
 
-key_manager = KeyManager('API_KEY path here')
+key_manager = KeyManager('YOUR_API_KEY_PATH_HERE')
 api_key = key_manager.get('OPENAI_API_KEY')
 
 #create LLM node
-llm = LLM("LLMNode", config={"api_key": api_key, model="gpt-5-mini"})
+llm = LLM("LLMNode", config={"api_key": api_key, "model":"gpt-5-mini"})
 
 #-------- Configure the Inputs to the LLM -----------
 #pick the llm model
@@ -81,7 +81,6 @@ llm_flow.add_data_source("Prompt|generate_prompt_openai|instructions", "INPUTS|i
 llm_flow.add_data_source("Prompt|generate_prompt_openai|query", "INPUTS|query")
 
 llm_flow.add_data_source("LLMNode|call_llm|messages", "Prompt|generate_prompt_openai|messages")
-llm_flow.set_node_input("LLMNode|call_llm|model", "gpt-5-mini")
 llm_flow.set_node_input("LLMNode|call_llm|tools", [])
 
 llm_flow.set_node_outputs(["LLMNode|call_llm|content"])

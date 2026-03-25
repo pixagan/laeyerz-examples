@@ -14,10 +14,10 @@
 
 from laeyerz.flow.Node import Node
 from laeyerz.flow.Flow import Flow
-from laeyerz.nodes.llm.OpenAINode import OpenAINode as LLM
+from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.utils.KeyManager import KeyManager
 
-key_manager = KeyManager("../../.env")
+key_manager = KeyManager("YOUR_API_KEY_PATH_HERE")
 
 api_key = key_manager.get('OPENAI_API_KEY')
 
@@ -80,7 +80,7 @@ prompt1Node.set_function("prompt", prompt1, {}, prompt1_inputs, prompt1_outputs)
 
 
 #create LLM node
-llm = LLM("TextGen", config={"api_key": api_key, model="gpt-5-mini"})
+llm = LLM("TextGen", config={"api_key": api_key, "model":"gpt-5-mini"})
 
 
 
@@ -150,7 +150,7 @@ prompt2_outputs = [
 prompt2Node.set_function("prompt", prompt2, {}, prompt2_inputs, prompt2_outputs)
 
 
-llm2 = LLM("ASCIIGen", config={"api_key": api_key, model="gpt-5-mini"})
+llm2 = LLM("ASCIIGen", config={"api_key": api_key, "model":"gpt-5-mini"})
 
 
 greetingFlow = Flow("GreetingFlow")
@@ -189,7 +189,6 @@ greetingFlow.add_data_source("Prompt2|prompt|emoji_density", "INPUTS|emoji_densi
 greetingFlow.add_data_source("Prompt2|prompt|text", "TextGen|call_llm|content")
 
 greetingFlow.add_data_source("ASCIIGen|call_llm|messages", "Prompt2|prompt|prompt")
-greetingFlow.set_node_input("ASCIIGen|call_llm|model", "gpt-5-mini")
 greetingFlow.set_node_input("ASCIIGen|call_llm|tools", [])
 
 
