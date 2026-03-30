@@ -204,7 +204,7 @@ input_data = {
     }
 }
 
-flow.set_node_outputs(['InvoiceGenerator|generate_invoice|invoice_text'])
+flow.set_outputs(['InvoiceGenerator|generate_invoice|invoice_text'])
 
 output = flow.run(input_data)
 

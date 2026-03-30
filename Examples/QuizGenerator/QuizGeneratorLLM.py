@@ -205,7 +205,7 @@ quiz_gen.add_data_source("Quizzer|quiz|nQuestions", "INPUTS|nQuestions")
 quiz_gen.add_data_source("HTMLGenerator|htmlpage|quiz", "Quizzer|quiz|quiz")
 
 
-quiz_gen.set_node_outputs(['HTMLGenerator|htmlpage|htmlpage'])
+quiz_gen.set_outputs(['HTMLGenerator|htmlpage|htmlpage'])
 
 inputs = {
     "topic":'Neural Networks',

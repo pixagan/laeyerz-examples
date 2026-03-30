@@ -177,7 +177,7 @@ chat_flow.add_data_source("LLM|call_llm|messages", "Prompt|prompt|prompt")
 chat_flow.set_node_input("LLM|call_llm|tools", [])
 
 #output of the the chat node
-chat_flow.set_node_outputs(['LLM|call_llm|content'])
+chat_flow.set_outputs(['LLM|call_llm|content'])
 
 chat_flow.finalize()
 

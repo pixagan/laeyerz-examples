@@ -193,7 +193,7 @@ greetingFlow.set_node_input("ASCIIGen|call_llm|tools", [])
 
 
 
-greetingFlow.set_node_outputs(['ASCIIGen|call_llm|content'])
+greetingFlow.set_outputs(['ASCIIGen|call_llm|content'])
 
 greetingFlow.finalize()
 

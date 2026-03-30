@@ -83,7 +83,7 @@ llm_flow.add_data_source("Prompt|generate_prompt_openai|query", "INPUTS|query")
 llm_flow.add_data_source("LLMNode|call_llm|messages", "Prompt|generate_prompt_openai|messages")
 llm_flow.set_node_input("LLMNode|call_llm|tools", [])
 
-llm_flow.set_node_outputs(["LLMNode|call_llm|content"])
+llm_flow.set_outputs(["LLMNode|call_llm|content"])
 
 
 flow_outputs = llm_flow.run(
