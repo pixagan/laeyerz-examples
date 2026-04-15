@@ -1,0 +1,560 @@
+<!-- # Copyright 2025 Pixagan Technologies
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>QuestionGrader</title>
+  <style>
+    :root {
+      --gap: 12px;
+      --accent: #16a34a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --danger: #dc2626;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      height: 100vh;
+      width: 100vw;
+      background: var(--bg);
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
+      gap: 16px;
+      height: calc(100vh - 20px - 20px - 30px); /* container padding + header space */
+      align-items: stretch;
+    }
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      overflow: auto;
+      box-sizing: border-box;
+    }
+    .panel-inner {
+      padding: 14px;
+    }
+    .form-grid {
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: 1fr;
+      background: #eff6ff; /* light blue */
+      padding: 14px;
+      border-radius: 8px;
+    }
+    label {
+      font-size: 13px;
+      color: #111827;
+      display: block;
+      margin-bottom: 6px;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      min-height: 48px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: none;
+      overflow: hidden;
+      line-height: 1.35;
+    }
+    .row {
+      display: flex;
+      gap: var(--gap);
+      align-items: flex-start;
+    }
+    .col {
+      flex: 1;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .result {
+      padding: 14px;
+      border-radius: 8px;
+      background: #fbfdff;
+    }
+    .result h2 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 700;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+    .feedback {
+      white-space: pre-wrap;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+    .criteria-list {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+    .criterion {
+      padding: 10px;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+    }
+    .crit-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+    }
+    .crit-name {
+      font-weight: 600;
+    }
+    .crit-score {
+      color: #065f46;
+      font-weight: 700;
+    }
+
+    .grading-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .grading-table th, .grading-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .grading-table th {
+      background: #f8fafc;
+      color: #111827;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .review-ok { color: #16a34a; font-weight: 700; }
+    .review-bad { color: #dc2626; font-weight: 700; }
+    .error {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(37,99,235,0.2);
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    small.hint { color: var(--muted); display: block; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container" role="region" aria-label="Grading block">
+    <h1>Grading Block</h1>
+
+    <div class="layout">
+      <div class="panel" aria-label="Inputs">
+        <div class="panel-inner">
+          <div class="form-grid" id="grading-form">
+            <div class="row">
+              <div class="col">
+                <label for="subject">Subject</label>
+                <input id="subject" type="text" placeholder="e.g., Biology, World History, Algebra" />
+                <small class="hint">Optional: helps tailor grading and feedback.</small>
+              </div>
+
+              <div class="col">
+                <label for="topic">Topic</label>
+                <input id="topic" type="text" placeholder="e.g., Photosynthesis, WW2 causes, Quadratic equations" />
+                <small class="hint">Optional: the specific concept being assessed.</small>
+              </div>
+            </div>
+
+            <div>
+              <label for="question">Question</label>
+              <textarea id="question" rows="6" placeholder="Enter the question prompt here"></textarea>
+              <small class="hint">The question given to the student.</small>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="correctAnswer">Correct Answer</label>
+                <textarea id="correctAnswer" rows="8" placeholder="Provide the expected/correct answer"></textarea>
+                <small class="hint">What a correct answer should contain.</small>
+              </div>
+
+              <div class="col">
+                <label for="rubric">Grading Rubric</label>
+                <textarea id="rubric" rows="8" placeholder="Describe rubric criteria, points, and expectations"></textarea>
+                <small class="hint">Optional: include criteria names, point values, and notes.</small>
+              </div>
+            </div>
+
+            <div>
+              <label for="submission">Student Submission</label>
+              <textarea id="submission" rows="16" placeholder="Paste the student's submission here"></textarea>
+            </div>
+
+            <div class="actions" style="justify-content: flex-start;">
+              <button id="submitBtn" type="button">Grade Submission</button>
+              <button id="clearBtn" class="secondary" type="button">Clear</button>
+              <div id="status" style="margin-left: 8px;"></div>
+            </div>
+
+            <div id="error" class="error" role="alert" aria-live="assertive" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" aria-label="Grading breakdown">
+        <div class="panel-inner">
+          <div id="output" class="result" aria-live="polite">
+            <h2>Grading Breakdown <span id="gradeBadge" class="badge" aria-hidden="true"></span></h2>
+            <div id="gradeMeta" class="meta"></div>
+
+            <div id="emptyState" class="meta" style="margin-top: 8px;">
+              Submit a response to see the grading table.
+            </div>
+
+            <div>
+              <div id="feedback" class="feedback"></div>
+            </div>
+
+            <div id="rubricSection" style="display:none;">
+              <div id="rubricBreakdown"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const apiUrl = 'http://localhost:6030/api/grade';
+      const submitBtn = document.getElementById('submitBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const statusEl = document.getElementById('status');
+      const errorEl = document.getElementById('error');
+      const outputEl = document.getElementById('output');
+      const gradeBadge = document.getElementById('gradeBadge');
+      const gradeMeta = document.getElementById('gradeMeta');
+      const feedbackEl = document.getElementById('feedback');
+      const emptyStateEl = document.getElementById('emptyState');
+      const rubricSection = document.getElementById('rubricSection');
+      const rubricBreakdown = document.getElementById('rubricBreakdown');
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (ch) => (
+          { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch]
+        ));
+      }
+
+      function setLoading(isLoading) {
+        submitBtn.disabled = isLoading;
+        if (isLoading) {
+          statusEl.innerHTML = '<span class="loading"><span class="spinner" aria-hidden="true"></span>Grading…</span>';
+        } else {
+          statusEl.innerHTML = '';
+        }
+      }
+
+      function showError(msg) {
+        errorEl.style.display = 'block';
+        errorEl.textContent = msg;
+      }
+
+      function clearError() {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+
+      function resetOutput() {
+        gradeBadge.textContent = '';
+        gradeMeta.textContent = '';
+        feedbackEl.textContent = '';
+        rubricSection.style.display = 'none';
+        rubricBreakdown.innerHTML = '';
+        if (emptyStateEl) emptyStateEl.style.display = 'block';
+      }
+
+      // Renders the API response, expected to be a list of objects:
+      // [{ metric_name, score, explanation, isCorrect, reason? }, ...]
+      function renderGradingTable(items) {
+        rubricBreakdown.innerHTML = '';
+
+        if (!Array.isArray(items) || items.length === 0) {
+          rubricSection.style.display = 'none';
+          return;
+        }
+
+        rubricSection.style.display = 'block';
+        if (emptyStateEl) emptyStateEl.style.display = 'none';
+
+        const table = document.createElement('table');
+        table.className = 'grading-table';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr>
+            <th>Grading Metric</th>
+            <th>Score awarded</th>
+            <th>Explanation</th>
+            <th>Review</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+
+        items.forEach((it, idx) => {
+          const metric = (it && (it.metric_name ?? it.metricName)) ?? `Metric ${idx + 1}`;
+          const score = (it && it.score != null) ? String(it.score) : '';
+          const explanation = (it && it.explanation) ? String(it.explanation) : '';
+          const isCorrect = !!(it && it.isCorrect);
+          const reason = (it && it.reason) ? String(it.reason) : '';
+
+          const tr = document.createElement('tr');
+
+          const reviewText = reason || (isCorrect ? 'Correct' : 'Incorrect');
+          const reviewClass = isCorrect ? 'review-ok' : 'review-bad';
+
+          tr.innerHTML = `
+            <td>${escapeHtml(metric)}</td>
+            <td>${escapeHtml(score)}</td>
+            <td>${escapeHtml(explanation)}</td>
+            <td class="${reviewClass}">${escapeHtml(reviewText)}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        rubricBreakdown.appendChild(table);
+      }
+
+      function formatGrade(gradeValue) {
+        // Display the raw numeric grade and a percent when possible.
+        if (typeof gradeValue !== 'number' || Number.isNaN(gradeValue)) return String(gradeValue);
+        // If it's within 0..1 assume fraction and show percent
+        if (gradeValue >= 0 && gradeValue <= 1) {
+          const percent = Math.round(gradeValue * 100);
+          return `${gradeValue} (${percent}%)`;
+        }
+        // If it looks like 0-100 scale, show as-is and also percent if it's <=100
+        if (gradeValue >= 0 && gradeValue <= 100) {
+          return `${gradeValue} / 100`;
+        }
+        // Fallback: show raw number
+        return String(gradeValue);
+      }
+
+      async function gradeSubmission() {
+        clearError();
+        resetOutput();
+
+        const subject = document.getElementById('subject').value.trim();
+        const topic = document.getElementById('topic').value.trim();
+        const question = document.getElementById('question').value.trim();
+        const correctAnswer = document.getElementById('correctAnswer').value.trim();
+        const rubric = document.getElementById('rubric').value.trim();
+        const submission = document.getElementById('submission').value.trim();
+
+        if (!question) {
+          showError('Please enter the question.');
+          return;
+        }
+        if (!submission) {
+          showError('Please provide the student submission to grade.');
+          return;
+        }
+
+        const payload = {
+          subject: subject,
+          topic: topic,
+          question: question,
+          answer: correctAnswer,
+          rubric: rubric,
+          submission: submission
+        };
+
+        setLoading(true);
+
+        try {
+          const resp = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!resp.ok) {
+            // Attempt to extract error message from response
+            let msg = `Grading API returned ${resp.status} ${resp.statusText}`;
+            try {
+              const data = await resp.json();
+              if (data && data.error) msg += `: ${data.error}`;
+            } catch (e) { /* ignore parse errors */ }
+            throw new Error(msg);
+          }
+
+          const result = await resp.json();
+
+          // Expected response shape:
+          // { grading: [{ metric_name, score, explanation, isCorrect, reason? }, ...] }
+          // Fallbacks supported: raw list, or { grader_response: [...] }.
+          const gradingItems = Array.isArray(result?.grading)
+            ? result.grading
+            : (Array.isArray(result)
+              ? result
+              : (Array.isArray(result?.grader_response) ? result.grader_response : []));
+
+          gradeBadge.textContent = '';
+          gradeMeta.textContent = '';
+          feedbackEl.textContent = '';
+
+          renderGradingTable(gradingItems);
+
+        } catch (err) {
+          console.error(err);
+          showError('Error grading submission: ' + (err.message || 'An unknown error occurred.'));
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      submitBtn.addEventListener('click', gradeSubmission);
+
+      clearBtn.addEventListener('click', () => {
+        document.getElementById('subject').value = '';
+        document.getElementById('topic').value = '';
+        document.getElementById('question').value = '';
+        document.getElementById('correctAnswer').value = '';
+        document.getElementById('rubric').value = '';
+        document.getElementById('submission').value = '';
+        clearError();
+        resetOutput();
+        autoSizeAllTextareas();
+      });
+
+      // Allow Ctrl/Cmd+Enter to submit from the submission textarea
+      document.getElementById('submission').addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          gradeSubmission();
+        }
+      });
+
+      function autoSizeTextarea(el) {
+        if (!el) return;
+        el.style.height = 'auto';
+        el.style.height = `${el.scrollHeight}px`;
+      }
+
+      function autoSizeAllTextareas() {
+        const ids = ['question', 'correctAnswer', 'rubric', 'submission'];
+        ids.forEach((id) => autoSizeTextarea(document.getElementById(id)));
+      }
+
+      ['question', 'correctAnswer', 'rubric', 'submission'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', () => autoSizeTextarea(el));
+      });
+
+      // Initial sizing in case there are defaults/autofill values.
+      autoSizeAllTextareas();
+    })();
+  </script>
+</body>
+</html>
