@@ -1,0 +1,897 @@
+<!-- # Copyright 2025 Pixagan Technologies
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>QuestionGrader</title>
+  <style>
+    :root {
+      --gap: 12px;
+      --accent: #16a34a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --danger: #dc2626;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      height: 100vh;
+      width: 100vw;
+      background: var(--bg);
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
+      gap: 16px;
+      height: calc(100vh - 20px - 20px - 30px); /* container padding + header space */
+      align-items: stretch;
+    }
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      overflow: auto;
+      box-sizing: border-box;
+    }
+    .panel-inner {
+      padding: 14px;
+    }
+    .form-grid {
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: 1fr;
+      background: #eff6ff; /* light blue */
+      padding: 14px;
+      border-radius: 8px;
+    }
+    label {
+      font-size: 13px;
+      color: #111827;
+      display: block;
+      margin-bottom: 6px;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      min-height: 48px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: none;
+      overflow: hidden;
+      line-height: 1.35;
+    }
+    .row {
+      display: flex;
+      gap: var(--gap);
+      align-items: flex-start;
+    }
+    .col {
+      flex: 1;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .result {
+      padding: 14px;
+      border-radius: 8px;
+      background: #fbfdff;
+    }
+    .result h2 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 700;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+    .badge-ok {
+      background: rgba(16, 185, 129, 0.14);
+      color: #065f46;
+    }
+    .badge-bad {
+      background: rgba(239, 68, 68, 0.14);
+      color: #7f1d1d;
+    }
+    .feedback {
+      white-space: pre-wrap;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .card {
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .card.similar {
+      background: rgba(16, 185, 129, 0.10);
+      border-color: rgba(16, 185, 129, 0.22);
+    }
+    .card.different {
+      background: rgba(239, 68, 68, 0.10);
+      border-color: rgba(239, 68, 68, 0.22);
+    }
+    .card-title {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .card-body {
+      color: rgba(15, 23, 42, 0.82);
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .card.similar .card-title,
+    .card.similar .card-body {
+      color: #065f46;
+    }
+    .card.different .card-title,
+    .card.different .card-body {
+      color: #7f1d1d;
+    }
+    .criteria-list {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+    .criterion {
+      padding: 10px;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+    }
+    .crit-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+    }
+    .crit-name {
+      font-weight: 600;
+    }
+    .crit-score {
+      color: #065f46;
+      font-weight: 700;
+    }
+
+    .grading-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .grading-table th, .grading-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .grading-table th {
+      background: #f8fafc;
+      color: #111827;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .compare-table td ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .compare-table td ul li {
+      margin: 6px 0;
+    }
+    .compare-table {
+      table-layout: fixed;
+    }
+    .compare-table th,
+    .compare-table td {
+      width: 50%;
+    }
+    .compare-table th + th,
+    .compare-table td + td {
+      border-left: 2px solid var(--border);
+    }
+    .compare-table td {
+      border-bottom: none;
+    }
+    .compare-similar {
+      color: #065f46;
+    }
+    .compare-different {
+      color: #7f1d1d;
+    }
+    .compact-list {
+      margin: 8px 0 0 0;
+      padding-left: 18px;
+      line-height: 1.25;
+      font-size: 13px;
+    }
+    .compact-list li {
+      margin: 4px 0;
+    }
+    .compact-point {
+      font-weight: 700;
+    }
+
+    .review-ok { color: #16a34a; font-weight: 700; }
+    .review-bad { color: #dc2626; font-weight: 700; }
+    .error {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(37,99,235,0.2);
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    small.hint { color: var(--muted); display: block; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container" role="region" aria-label="Grading block">
+    <h1>Question Grader</h1>
+
+    <div class="layout">
+      <div class="panel" aria-label="Inputs">
+        <div class="panel-inner">
+          <div class="form-grid" id="grading-form">
+            <div class="row">
+              <div class="col">
+                <label for="graderMode">Grader Mode</label>
+                <select id="graderMode">
+                  <option value="compare" selected>Compare with Solution</option>
+                  <option value="rubric">Rubric Based</option>
+                  <option value="consistency">Consistency Check</option>
+                </select>
+                <small class="hint">Optional: helps tailor grading and feedback.</small>
+              </div>
+              <div class="col">
+                <label for="subject">Subject</label>
+                <input id="subject" type="text" placeholder="e.g., Biology, World History, Algebra" />
+                <small class="hint">Optional: helps tailor grading and feedback.</small>
+              </div>
+            </div>
+
+            <div>
+              <label for="question">Question</label>
+              <textarea id="question" rows="6" placeholder="Enter the question prompt here"></textarea>
+              <small class="hint">The question given to the student.</small>
+            </div>
+
+            <div id="answerBlock">
+              <label for="answer">Solution / Answer Key</label>
+              <textarea id="answer" rows="8" placeholder="Paste the instructor solution / answer key here"></textarea>
+              <small class="hint">Used for “Compare with Solution”.</small>
+            </div>
+
+            <div>
+              <label for="rubric">Grading Rubric</label>
+              <textarea id="rubric" rows="8" placeholder="Describe rubric criteria, points, and expectations"></textarea>
+              <small class="hint">Optional: include criteria names, point values, and notes.</small>
+            </div>
+
+            <div>
+              <label for="submission">Student Submission</label>
+              <textarea id="submission" rows="16" placeholder="Paste the student's submission here"></textarea>
+            </div>
+
+            <div class="actions" style="justify-content: flex-start;">
+              <button id="submitBtn" type="button">Grade Submission</button>
+              <button id="clearBtn" class="secondary" type="button">Clear</button>
+              <div id="status" style="margin-left: 8px;"></div>
+            </div>
+
+            <div id="error" class="error" role="alert" aria-live="assertive" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" aria-label="Grading breakdown">
+        <div class="panel-inner">
+          <div id="output" class="result" aria-live="polite">
+            <h2>Grading Breakdown <span id="gradeBadge" class="badge" aria-hidden="true"></span></h2>
+            <div id="gradeMeta" class="meta"></div>
+            <div id="rubricControls" class="actions" style="justify-content: flex-start; margin-top: 6px; display:none;">
+              <button id="toggleKeypointsBtn" class="secondary" type="button">Show keypoints</button>
+            </div>
+
+            <div id="emptyState" class="meta" style="margin-top: 8px;">
+              Submit a response to see the grading table.
+            </div>
+
+            <div>
+              <div id="feedback" class="feedback"></div>
+            </div>
+
+            <div id="rubricSection" style="display:none;">
+              <div id="rubricBreakdown"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const submitBtn = document.getElementById('submitBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const statusEl = document.getElementById('status');
+      const errorEl = document.getElementById('error');
+      const outputEl = document.getElementById('output');
+      const gradeBadge = document.getElementById('gradeBadge');
+      const gradeMeta = document.getElementById('gradeMeta');
+      const feedbackEl = document.getElementById('feedback');
+      const emptyStateEl = document.getElementById('emptyState');
+      const rubricSection = document.getElementById('rubricSection');
+      const rubricBreakdown = document.getElementById('rubricBreakdown');
+      const graderModeEl = document.getElementById('graderMode');
+      const answerBlock = document.getElementById('answerBlock');
+      const rubricTextarea = document.getElementById('rubric');
+      const answerTextarea = document.getElementById('answer');
+      const rubricControls = document.getElementById('rubricControls');
+      const toggleKeypointsBtn = document.getElementById('toggleKeypointsBtn');
+
+      let showRubricKeypoints = false;
+      let lastRubricItems = [];
+
+      function apiUrlForMode(mode) {
+        const base = 'http://localhost:6030/api/grade';
+        if (mode === 'rubric') return `${base}/rubric`;
+        if (mode === 'consistency') return `${base}/consistency`;
+        return `${base}/compare`;
+      }
+
+      function applyModeToUi(mode) {
+        const showAnswer = mode === 'compare';
+        const showRubric = mode === 'rubric';
+
+        if (answerBlock) answerBlock.style.display = showAnswer ? 'block' : 'none';
+        if (rubricTextarea) rubricTextarea.closest('div').style.display = showRubric ? 'block' : 'none';
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (ch) => (
+          { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch]
+        ));
+      }
+
+      function setLoading(isLoading) {
+        submitBtn.disabled = isLoading;
+        if (isLoading) {
+          statusEl.innerHTML = '<span class="loading"><span class="spinner" aria-hidden="true"></span>Grading…</span>';
+        } else {
+          statusEl.innerHTML = '';
+        }
+      }
+
+      function showError(msg) {
+        errorEl.style.display = 'block';
+        errorEl.textContent = msg;
+      }
+
+      function clearError() {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+
+      function resetOutput() {
+        gradeBadge.textContent = '';
+        gradeMeta.textContent = '';
+        feedbackEl.textContent = '';
+        feedbackEl.innerHTML = '';
+        gradeBadge.classList.remove('badge-ok', 'badge-bad');
+        if (rubricControls) rubricControls.style.display = 'none';
+        rubricSection.style.display = 'none';
+        rubricBreakdown.innerHTML = '';
+        if (emptyStateEl) emptyStateEl.style.display = 'block';
+      }
+
+      // isCorrect may be boolean or strings 'OK' | 'NOT_OK' from the API
+      function isGradingOk(isCorrect) {
+        if (typeof isCorrect === 'boolean') return isCorrect;
+        const s = String(isCorrect ?? '').trim().toUpperCase();
+        if (s === 'OK') return true;
+        if (s === 'NOT_OK') return false;
+        return false;
+      }
+
+      // Renders the API response, expected to be a list of objects:
+      // [{ metric_name, score, explanation, isCorrect, reason?, suggestion?, expected_score? }, ...]
+      function renderGradingTable(items) {
+        rubricBreakdown.innerHTML = '';
+
+        if (!Array.isArray(items) || items.length === 0) {
+          rubricSection.style.display = 'none';
+          return;
+        }
+
+        rubricSection.style.display = 'block';
+        if (emptyStateEl) emptyStateEl.style.display = 'none';
+
+        const table = document.createElement('table');
+        table.className = 'grading-table';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr>
+            <th>Grading Metric</th>
+            <th>Score awarded</th>
+            <th>Explanation</th>
+            <th>Review</th>
+            <th>Expected score</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+
+        items.forEach((it, idx) => {
+          const metric = (it && (it.metric_name ?? it.metricName)) ?? `Metric ${idx + 1}`;
+          const score = (it && it.score != null) ? String(it.score) : '';
+          const expectedRaw = it && (it.expected_score ?? it.expectedScore);
+          const expectedScore = (expectedRaw != null && expectedRaw !== '') ? String(expectedRaw) : '';
+          const explanation = (it && it.explanation) ? String(it.explanation) : '';
+          const ok = isGradingOk(it && it.isCorrect);
+          const hasReason = it && it.reason != null && String(it.reason).trim() !== '';
+          const reason = hasReason ? String(it.reason) : '';
+
+          const tr = document.createElement('tr');
+
+          const reviewText = reason || (ok ? 'OK' : 'NOT_OK');
+          const reviewClass = ok ? 'review-ok' : 'review-bad';
+
+          tr.innerHTML = `
+            <td>${escapeHtml(metric)}</td>
+            <td>${escapeHtml(score)}</td>
+            <td>${escapeHtml(explanation)}</td>
+            <td class="${reviewClass}">${escapeHtml(reviewText)}</td>
+            <td>${escapeHtml(expectedScore)}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        rubricBreakdown.appendChild(table);
+      }
+
+      // Rubric grader response:
+      // { grading: [{ metric, keypoints, score, confidence, explanation }, ...] }
+      function renderRubricTable(items) {
+        rubricBreakdown.innerHTML = '';
+
+        if (!Array.isArray(items) || items.length === 0) {
+          rubricSection.style.display = 'none';
+          return;
+        }
+
+        rubricSection.style.display = 'block';
+        if (emptyStateEl) emptyStateEl.style.display = 'none';
+
+        const table = document.createElement('table');
+        table.className = 'grading-table';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr>
+            <th>Metric</th>
+            <th>Score</th>
+            <th>Confidence</th>
+            <th>Explanation</th>
+            ${showRubricKeypoints ? '<th>Keypoints</th>' : ''}
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+
+        items.forEach((it, idx) => {
+          const metric = (it && (it.metric ?? it.metric_name ?? it.metricName)) ?? `Metric ${idx + 1}`;
+          const keypoints = (it && (it.keypoints ?? it.key_points ?? it.keyPoints)) ? String(it.keypoints ?? it.key_points ?? it.keyPoints) : '';
+          const score = (it && it.score != null) ? String(it.score) : '';
+          const confidence = (it && (it.confidence ?? it.Confidence)) ? String(it.confidence ?? it.Confidence) : '';
+          const explanation = (it && it.explanation) ? String(it.explanation) : '';
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${escapeHtml(metric)}</td>
+            <td>${escapeHtml(score)}</td>
+            <td>${escapeHtml(confidence)}</td>
+            <td>${escapeHtml(explanation)}</td>
+            ${showRubricKeypoints ? `<td>${escapeHtml(keypoints)}</td>` : ''}
+          `;
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        rubricBreakdown.appendChild(table);
+      }
+
+      function renderPointsCards(points) {
+        feedbackEl.innerHTML = '';
+
+        if (!Array.isArray(points) || points.length === 0) {
+          if (emptyStateEl) emptyStateEl.style.display = 'block';
+          return;
+        }
+
+        if (emptyStateEl) emptyStateEl.style.display = 'none';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'cards';
+
+        points.forEach((p, idx) => {
+          const title = (p && p.point) ? String(p.point) : `Point ${idx + 1}`;
+          const explanation = (p && p.explanation) ? String(p.explanation) : '';
+
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="card-title">${escapeHtml(title)}</div>
+            <div class="card-body">${escapeHtml(explanation)}</div>
+          `;
+          wrap.appendChild(card);
+        });
+
+        feedbackEl.appendChild(wrap);
+      }
+
+      function renderCompareTwoColumnTable(similar, difference) {
+        feedbackEl.innerHTML = '';
+
+        const sim = Array.isArray(similar) ? similar : [];
+        const diff = Array.isArray(difference) ? difference : [];
+
+        if (sim.length === 0 && diff.length === 0) {
+          if (emptyStateEl) emptyStateEl.style.display = 'block';
+          return;
+        }
+        if (emptyStateEl) emptyStateEl.style.display = 'none';
+
+        const table = document.createElement('table');
+        table.className = 'grading-table compare-table';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr>
+            <th class="compare-similar">Similarities</th>
+            <th class="compare-different">Differences</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+
+        function renderCellPoints(list, className) {
+          if (!Array.isArray(list) || list.length === 0) return `<div class="${className} meta">No items</div>`;
+          return `<ul class="${className}">
+            ${list.map((p) => {
+              const title = (p && p.point) ? String(p.point) : '';
+              const explanation = (p && p.explanation) ? String(p.explanation) : '';
+              const text = explanation ? `${title} — ${explanation}` : title;
+              return `<li>${escapeHtml(text)}</li>`;
+            }).join('')}
+          </ul>`;
+        }
+
+        // Columns are independent; do not pair items by row index.
+        const tr = document.createElement('tr');
+        const simCell = document.createElement('td');
+        simCell.innerHTML = renderCellPoints(sim, 'compare-similar');
+        const diffCell = document.createElement('td');
+        diffCell.innerHTML = renderCellPoints(diff, 'compare-different');
+        tr.appendChild(simCell);
+        tr.appendChild(diffCell);
+        tbody.appendChild(tr);
+
+        table.appendChild(tbody);
+        feedbackEl.appendChild(table);
+      }
+
+      function renderConsistencyResult(result) {
+        // Expected: { consistency: "YES"|"NO", points: [{point, explanation}, ...] }
+        const c = String(result?.consistency ?? '').trim().toUpperCase();
+        const isOk = c === 'YES';
+        const label = (c === 'YES' || c === 'NO') ? c : 'UNKNOWN';
+
+        gradeBadge.textContent = label;
+        gradeBadge.classList.remove('badge-ok', 'badge-bad');
+        gradeBadge.classList.add(isOk ? 'badge-ok' : 'badge-bad');
+
+        gradeMeta.textContent = 'Overall consistency';
+
+        rubricSection.style.display = 'none';
+        rubricBreakdown.innerHTML = '';
+
+        feedbackEl.innerHTML = '';
+        const pts = Array.isArray(result?.points) ? result.points : [];
+        if (pts.length === 0) {
+          if (emptyStateEl) emptyStateEl.style.display = 'block';
+          return;
+        }
+        if (emptyStateEl) emptyStateEl.style.display = 'none';
+
+        const ul = document.createElement('ul');
+        ul.className = 'compact-list';
+        pts.forEach((p, idx) => {
+          const title = (p && p.point) ? String(p.point) : `Point ${idx + 1}`;
+          const explanation = (p && p.explanation) ? String(p.explanation) : '';
+
+          const li = document.createElement('li');
+          li.innerHTML = `<span class="compact-point">${escapeHtml(title)}</span>${explanation ? ` — ${escapeHtml(explanation)}` : ''}`;
+          ul.appendChild(li);
+        });
+        feedbackEl.appendChild(ul);
+      }
+
+      function formatGrade(gradeValue) {
+        // Display the raw numeric grade and a percent when possible.
+        if (typeof gradeValue !== 'number' || Number.isNaN(gradeValue)) return String(gradeValue);
+        // If it's within 0..1 assume fraction and show percent
+        if (gradeValue >= 0 && gradeValue <= 1) {
+          const percent = Math.round(gradeValue * 100);
+          return `${gradeValue} (${percent}%)`;
+        }
+        // If it looks like 0-100 scale, show as-is and also percent if it's <=100
+        if (gradeValue >= 0 && gradeValue <= 100) {
+          return `${gradeValue} / 100`;
+        }
+        // Fallback: show raw number
+        return String(gradeValue);
+      }
+
+      async function gradeSubmission() {
+        clearError();
+        resetOutput();
+
+        const mode = (graderModeEl && graderModeEl.value) ? String(graderModeEl.value) : 'compare';
+        const subject = document.getElementById('subject').value.trim();
+        const question = document.getElementById('question').value.trim();
+        const rubric = rubricTextarea ? rubricTextarea.value.trim() : '';
+        const answer = answerTextarea ? answerTextarea.value.trim() : '';
+        const submission = document.getElementById('submission').value.trim();
+
+        if (!question) {
+          showError('Please enter the question.');
+          return;
+        }
+        if (!submission) {
+          showError('Please provide the student submission to grade.');
+          return;
+        }
+        if (mode === 'compare' && !answer) {
+          showError('Please provide the solution / answer key for comparison.');
+          return;
+        }
+        if (mode === 'rubric' && !rubric) {
+          showError('Please provide the rubric for rubric-based grading.');
+          return;
+        }
+
+        const payload = { subject, question, submission };
+        if (mode === 'compare') payload.answer = answer;
+        if (mode === 'rubric') payload.rubric = rubric;
+
+        setLoading(true);
+
+        try {
+          const apiUrl = apiUrlForMode(mode);
+          const resp = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!resp.ok) {
+            // Attempt to extract error message from response
+            let msg = `Grading API returned ${resp.status} ${resp.statusText}`;
+            try {
+              const data = await resp.json();
+              if (data && data.error) msg += `: ${data.error}`;
+            } catch (e) { /* ignore parse errors */ }
+            throw new Error(msg);
+          }
+
+          const result = await resp.json();
+
+          gradeBadge.textContent = '';
+          gradeMeta.textContent = '';
+          feedbackEl.textContent = '';
+
+          if (mode === 'compare') {
+            rubricSection.style.display = 'none';
+            rubricBreakdown.innerHTML = '';
+            if (rubricControls) rubricControls.style.display = 'none';
+            const sim = Array.isArray(result?.similar) ? result.similar : (Array.isArray(result?.simiilar) ? result.simiilar : []);
+            const diff = Array.isArray(result?.difference) ? result.difference : (Array.isArray(result?.different) ? result.different : []);
+            renderCompareTwoColumnTable(sim, diff);
+          } else if (mode === 'rubric') {
+            feedbackEl.textContent = '';
+            lastRubricItems = Array.isArray(result?.grading) ? result.grading : [];
+            if (rubricControls) rubricControls.style.display = 'flex';
+            if (toggleKeypointsBtn) toggleKeypointsBtn.textContent = showRubricKeypoints ? 'Hide keypoints' : 'Show keypoints';
+            renderRubricTable(lastRubricItems);
+          } else if (mode === 'consistency') {
+            feedbackEl.textContent = '';
+            if (rubricControls) rubricControls.style.display = 'none';
+            renderConsistencyResult(result);
+          } else {
+            if (rubricControls) rubricControls.style.display = 'none';
+            // Expected response shape:
+            // { grading: [{ metric_name, score, explanation, isCorrect: 'OK'|'NOT_OK', reason? }, ...] }
+            // Fallbacks supported: raw list, or { grader_response: [...] }.
+            const gradingItems = Array.isArray(result?.grading)
+              ? result.grading
+              : (Array.isArray(result)
+                ? result
+                : (Array.isArray(result?.grader_response) ? result.grader_response : []));
+            renderGradingTable(gradingItems);
+          }
+
+        } catch (err) {
+          console.error(err);
+          showError('Error grading submission: ' + (err.message || 'An unknown error occurred.'));
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      submitBtn.addEventListener('click', gradeSubmission);
+
+      if (toggleKeypointsBtn) {
+        toggleKeypointsBtn.addEventListener('click', () => {
+          showRubricKeypoints = !showRubricKeypoints;
+          toggleKeypointsBtn.textContent = showRubricKeypoints ? 'Hide keypoints' : 'Show keypoints';
+          renderRubricTable(lastRubricItems);
+        });
+      }
+
+      clearBtn.addEventListener('click', () => {
+        if (graderModeEl) graderModeEl.value = 'compare';
+        document.getElementById('subject').value = '';
+        document.getElementById('question').value = '';
+        if (rubricTextarea) rubricTextarea.value = '';
+        if (answerTextarea) answerTextarea.value = '';
+        document.getElementById('submission').value = '';
+        clearError();
+        resetOutput();
+        applyModeToUi((graderModeEl && graderModeEl.value) ? graderModeEl.value : 'compare');
+        autoSizeAllTextareas();
+      });
+
+      // Allow Ctrl/Cmd+Enter to submit from the submission textarea
+      document.getElementById('submission').addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          gradeSubmission();
+        }
+      });
+
+      function autoSizeTextarea(el) {
+        if (!el) return;
+        el.style.height = 'auto';
+        el.style.height = `${el.scrollHeight}px`;
+      }
+
+      function autoSizeAllTextareas() {
+        const ids = ['question', 'answer', 'rubric', 'submission'];
+        ids.forEach((id) => autoSizeTextarea(document.getElementById(id)));
+      }
+
+      ['question', 'answer', 'rubric', 'submission'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', () => autoSizeTextarea(el));
+      });
+
+      // Initial sizing in case there are defaults/autofill values.
+      if (graderModeEl) graderModeEl.addEventListener('change', () => applyModeToUi(graderModeEl.value));
+      applyModeToUi((graderModeEl && graderModeEl.value) ? graderModeEl.value : 'compare');
+      autoSizeAllTextareas();
+    })();
+  </script>
+</body>
+</html>
