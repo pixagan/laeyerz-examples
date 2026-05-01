@@ -4,7 +4,8 @@ from laeyerz_nodes.llm.OpenAINode import OpenAINode as LLM
 from laeyerz.utils.KeyManager import KeyManager
 
 
-km = KeyManager('YOUR_API_KEY_PATH_HERE')
+#API key path
+km = KeyManager('../../.env')
 
 llm = LLM('Model', config={"api_key":km['OPENAI_API_KEY'], "model":"gpt-5-mini"})
 
